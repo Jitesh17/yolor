@@ -63,10 +63,45 @@ def preview_annotations(img_path_list, show_image_preview: bool = True, write_im
                     f"{root_path}/preview_annotations/{img_path.split('/')[-1]}", img)
 
 
+def split_data(img_path_list, ratio: list):
+    """Split dataset
+
+    Args:
+        img_path_list ([type]): list of img paths of all datasets
+        ratio (list): train: val: test
+
+    Returns:
+        tuple[list[str]]: [description]
+    """
+    from sklearn.model_selection import train_test_split
+    _sum = sum(ratio)
+    test_ratio = ratio[-1]/_sum
+    train, test = train_test_split(img_path_list, test_size=test_ratio)
+    if len(ratio) == 3:
+        train, val = train_test_split(
+            train, test_size=ratio[1]/_sum/(1-test_ratio))
+        return train, val, test
+    return train, test
+
+
+def write_data(img_path_list, ratio: list):
+
+    data = split_data(img_path_list, ratio)
+    printj.cyan(
+        f"all: {len(img_path_list)}, train: {len(data[0])}, val: {len(data[1])}, test: {len(data[2])}")
+
+    for i, name in enumerate(["train", "val", "test"]):
+        f = open(f"helmet_dataset/{name}.txt", "w")
+        for line in data[i]:
+            f.write(line+"\r")
+        f.close()
+
+
 if __name__ == '__main__':
 
     root_path = "helmet_dataset"
 
     img_path_list = dir_contents_path_list_with_extension(
         f"{root_path}/images", [".png"])
-    preview_annotations(img_path_list)
+    # preview_annotations(img_path_list)
+    write_data(img_path_list, [90, 5, 5])
