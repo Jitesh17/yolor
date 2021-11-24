@@ -1,0 +1,10 @@
+# train, val and test datasets 
+train: data/train.txt  # 623 images
+val: data/val.txt  # 35 images
+test: data/test.txt  # 35 images 
+
+# number of classes
+nc: 1
+
+# class names
+names: ['helmet']
