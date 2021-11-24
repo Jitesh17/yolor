@@ -260,6 +260,29 @@ def train(hyp, opt, device, tb_writer=None, wandb=None):
             pbar = tqdm(pbar, total=nb)  # progress bar
         optimizer.zero_grad()
         for i, (imgs, targets, paths, _) in pbar:  # batch -------------------------------------------------------------
+            """ 
+            # Checking the augmented Dataset
+            import cv2
+            img_to_check = imgs.detach().to("cpu")
+            print(img_to_check)
+            print(img_to_check[0].shape)
+            img_to_check=img_to_check[0].permute([1, 2, 0])
+            img_to_check=img_to_check.numpy()
+            img_to_check=cv2.resize(img_to_check, (900, 900))
+            cv2.imwrite("aug/img_to_check.png", img_to_check)
+            cv2.imshow("img_to_check", img_to_check)
+            quit_flag = False
+            while True:
+                key = cv2.waitKey(0) & 0xFF
+                if key == ord('n'):
+                    break
+                elif key == ord('q'):
+                    quit_flag = True
+                    import sys
+                    sys.exit()
+                    break
+            cv2.destroyAllWindows()
+            """
             ni = i + nb * epoch  # number integrated batches (since train start)
             imgs = imgs.to(device, non_blocking=True).float() / 255.0  # uint8 to float32, 0-255 to 0.0-1.0
 
